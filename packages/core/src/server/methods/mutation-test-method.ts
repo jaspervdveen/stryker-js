@@ -2,8 +2,9 @@ import { createInjector } from 'typed-inject';
 import { MutantResult, PartialStrykerOptions } from '@stryker-mutator/api/core';
 import { commonTokens } from '@stryker-mutator/api/plugin';
 
-import { MutationTestExecutor } from '../../process/4-mutation-test-executor.js';
+import { EMPTY, Observable, Subject, fromEvent, interval, take, takeUntil } from 'rxjs';
 
+import { MutationTestExecutor } from '../../process/4-mutation-test-executor.js';
 import { provideLogger } from '../../di/provide-logger.js';
 import { PrepareExecutor } from '../../process/1-prepare-executor.js';
 import { MutantInstrumenterExecutor } from '../../process/2-mutant-instrumenter-executor.js';
@@ -23,6 +24,7 @@ export class MutationTestMethod {
   public static async runMutationTestRealtime(
     globPatterns: string[] | undefined,
     onMutantTested: (result: Readonly<MutantResult>) => void,
+    abortSignal: AbortSignal,
     injectorFactory = createInjector,
   ): Promise<void> {
     const options: PartialStrykerOptions = globPatterns?.length ? { mutate: globPatterns } : {};
@@ -51,7 +53,7 @@ export class MutationTestMethod {
 
         // 3. Perform a 'dry run' (initial test run). Runs the tests without active mutants and collects coverage.
         const dryRunExecutor = dryRunExecutorInjector.injectClass(DryRunExecutor);
-        const mutationRunExecutorInjector = await dryRunExecutor.execute();
+        const mutationRunExecutorInjector = (await dryRunExecutor.execute()).provideValue(commonTokens.abortSignal, abortSignal);
 
         // 4. Actual mutation testing. Will check every mutant and if valid run it in an available test runner.
         const mutationRunExecutor = mutationRunExecutorInjector.injectClass(MutationTestExecutor);
@@ -92,7 +94,7 @@ export class MutationTestMethod {
    * @param globPatterns The glob patterns to mutate.
    * @returns The mutant results.
    */
-  public static async runMutationTest(globPatterns?: string[]): Promise<MutantResult[]> {
-    return await new Stryker({ mutate: globPatterns }).runMutationTest();
+  public static async runMutationTest(abortSignal: AbortSignal, globPatterns?: string[]): Promise<MutantResult[]> {
+    return await new Stryker({ mutate: globPatterns }).runMutationTest(abortSignal);
   }
 }

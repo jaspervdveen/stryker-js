@@ -33,6 +33,7 @@ describe(MutationTestMethod.name, () => {
   let mutantInstrumenterExecutorMock: sinon.SinonStubbedInstance<MutantInstrumenterExecutor>;
   let dryRunExecutorMock: sinon.SinonStubbedInstance<DryRunExecutor>;
   let mutationTestExecutorMock: sinon.SinonStubbedInstance<MutationTestExecutor>;
+  let abortController: AbortController;
 
   beforeEach(() => {
     injectorMock = factory.injector();
@@ -72,6 +73,8 @@ describe(MutationTestMethod.name, () => {
     mutationTestExecutorMock.execute.resolves(mutantResults);
 
     shutdownLoggingStub = sinon.stub(LogConfigurator, 'shutdown');
+
+    abortController = new AbortController();
   });
 
   describe('runMutationTestRealtime', () => {
@@ -79,6 +82,7 @@ describe(MutationTestMethod.name, () => {
       await MutationTestMethod.runMutationTestRealtime(
         undefined,
         () => undefined,
+        abortController.signal,
         () => injectorMock as typedInject.Injector<MutationTestContext>,
       );
       expect(prepareExecutorMock.execute).calledOnce;
@@ -87,6 +91,7 @@ describe(MutationTestMethod.name, () => {
       await MutationTestMethod.runMutationTestRealtime(
         undefined,
         () => undefined,
+        abortController.signal,
         () => injectorMock as typedInject.Injector<MutationTestContext>,
       );
       expect(mutantInstrumenterExecutorMock.execute).calledOnce;
@@ -95,6 +100,7 @@ describe(MutationTestMethod.name, () => {
       await MutationTestMethod.runMutationTestRealtime(
         undefined,
         () => undefined,
+        abortController.signal,
         () => injectorMock as typedInject.Injector<MutationTestContext>,
       );
       expect(dryRunExecutorMock.execute).calledOnce;
@@ -104,6 +110,7 @@ describe(MutationTestMethod.name, () => {
       await MutationTestMethod.runMutationTestRealtime(
         undefined,
         () => undefined,
+        abortController.signal,
         () => injectorMock as typedInject.Injector<MutationTestContext>,
       );
       expect(mutationTestExecutorMock.execute).calledOnce;
@@ -115,6 +122,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejectedWith('Reporter unavailable');
@@ -125,6 +133,7 @@ describe(MutationTestMethod.name, () => {
       await MutationTestMethod.runMutationTestRealtime(
         globPatterns,
         () => undefined,
+        abortController.signal,
         () => injectorMock as typedInject.Injector<MutationTestContext>,
       );
       expect(prepareExecutorMock.execute).calledOnceWith({ mutate: globPatterns, reporters: ['empty'] });
@@ -137,6 +146,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejectedWith(expectedError);
@@ -149,6 +159,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
@@ -162,6 +173,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejectedWith(expectedError);
@@ -174,6 +186,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejectedWith(expectedError);
@@ -186,6 +199,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejectedWith(expectedError);
@@ -198,6 +212,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
@@ -210,6 +225,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
@@ -225,6 +241,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
@@ -238,6 +255,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
@@ -253,6 +271,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
@@ -271,6 +290,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
@@ -284,6 +304,7 @@ describe(MutationTestMethod.name, () => {
       await MutationTestMethod.runMutationTestRealtime(
         undefined,
         () => undefined,
+        abortController.signal,
         () => injectorMock as typedInject.Injector<MutationTestContext>,
       );
       expect(injectorMock.dispose).called;
@@ -295,6 +316,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
@@ -305,6 +327,7 @@ describe(MutationTestMethod.name, () => {
       await MutationTestMethod.runMutationTestRealtime(
         undefined,
         () => undefined,
+        abortController.signal,
         () => injectorMock as typedInject.Injector<MutationTestContext>,
       );
       expect(shutdownLoggingStub).called;
@@ -316,6 +339,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
@@ -327,6 +351,7 @@ describe(MutationTestMethod.name, () => {
         MutationTestMethod.runMutationTestRealtime(
           undefined,
           () => undefined,
+          abortController.signal,
           () => injectorMock as typedInject.Injector<MutationTestContext>,
         ),
       ).rejected;
