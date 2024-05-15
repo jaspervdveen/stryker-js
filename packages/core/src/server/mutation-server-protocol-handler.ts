@@ -79,19 +79,16 @@ export class MutationServerProtocolHandler {
     }
 
     const { signal } = abortController;
+    const { partialResultToken } = params;
 
     let mutantResults: MutantResult[] = [];
 
     try {
-      if (params.partialResultToken) {
-        await MutationTestMethod.runMutationTestRealtime(
-          params.globPatterns,
-          (result) => {
-            const progressParams: ProgressParams<MutatePartialResult> = { token: params.partialResultToken!, value: { mutants: [result] } };
-            this.serverAndClient.notify('progress', progressParams);
-          },
-          signal,
-        );
+      if (partialResultToken) {
+        await new MutationTestMethod().runMutationTestRealtime(params.globPatterns, signal, (result) => {
+          const progressParams: ProgressParams<MutatePartialResult> = { token: partialResultToken, value: { mutants: [result] } };
+          this.serverAndClient.notify('progress', progressParams);
+        });
       } else {
         mutantResults = await MutationTestMethod.runMutationTest(signal, params.globPatterns);
       }

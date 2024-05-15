@@ -2,8 +2,6 @@ import { createInjector } from 'typed-inject';
 import { MutantResult, PartialStrykerOptions } from '@stryker-mutator/api/core';
 import { commonTokens } from '@stryker-mutator/api/plugin';
 
-import { EMPTY, Observable, Subject, fromEvent, interval, take, takeUntil } from 'rxjs';
-
 import { MutationTestExecutor } from '../../process/4-mutation-test-executor.js';
 import { provideLogger } from '../../di/provide-logger.js';
 import { PrepareExecutor } from '../../process/1-prepare-executor.js';
@@ -16,21 +14,22 @@ import { ConfigError, retrieveCause } from '../../errors.js';
 import { LogConfigurator } from '../../logging/log-configurator.js';
 
 export class MutationTestMethod {
+  constructor(private readonly injectorFactory = createInjector) {}
+
   /**
    * Run a mutation test and get partial results via a callback.
    * @param globPatterns  The glob patterns to mutate.
    * @param onMutantTested  A callback that is called when a mutant is tested.
    */
-  public static async runMutationTestRealtime(
+  public async runMutationTestRealtime(
     globPatterns: string[] | undefined,
-    onMutantTested: (result: Readonly<MutantResult>) => void,
     abortSignal: AbortSignal,
-    injectorFactory = createInjector,
+    onMutantTested: (result: Readonly<MutantResult>) => void,
   ): Promise<void> {
     const options: PartialStrykerOptions = globPatterns?.length ? { mutate: globPatterns } : {};
     options.reporters = ['empty']; // used to stream results
 
-    const rootInjector = injectorFactory();
+    const rootInjector = this.injectorFactory();
     const loggerProvider = provideLogger(rootInjector);
 
     try {
