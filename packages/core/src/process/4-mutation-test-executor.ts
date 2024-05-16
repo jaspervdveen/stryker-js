@@ -74,10 +74,12 @@ export class MutationTestExecutor {
       return [];
     }
 
-    if (this.dryRunResult.tests.length === 0 && this.options.allowEmpty) {
+    if ((this.dryRunResult.tests.length === 0 && this.options.allowEmpty) || this.abortSignal?.aborted) {
       this.logDone();
       return [];
     }
+
+    const stop = this.abortSignal ? fromEvent(this.abortSignal, 'abort').pipe(take(1)) : EMPTY;
 
     const mutantTestPlans = await this.planner.makePlan(this.mutants);
     const { earlyResult$, runMutant$ } = this.executeEarlyResult(from(mutantTestPlans));
@@ -85,7 +87,6 @@ export class MutationTestExecutor {
     const { coveredMutant$, noCoverageResult$ } = this.executeNoCoverage(passedMutant$);
     const testRunnerResult$ = this.executeRunInTestRunner(coveredMutant$);
 
-    const stop = this.abortSignal ? fromEvent(this.abortSignal, 'abort').pipe(take(1)) : EMPTY;
     const results = await lastValueFrom(merge(testRunnerResult$, checkResult$, noCoverageResult$, earlyResult$).pipe(takeUntil(stop), toArray()));
 
     await this.mutationTestReportHelper.reportAll(results);
