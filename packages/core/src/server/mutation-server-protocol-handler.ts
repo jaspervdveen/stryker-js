@@ -4,7 +4,7 @@ import {
   JSONRPCResponse,
   JSONRPCServer,
   JSONRPCServerAndClient,
-  JSONRPCServerMiddleware,
+  JSONRPCServerMiddlewareNext,
   TypedJSONRPCServerAndClient,
   createJSONRPCErrorResponse,
 } from 'json-rpc-2.0';
@@ -41,12 +41,12 @@ export class MutationServerProtocolHandler {
     const jsonRpcClient = new JSONRPCClient((message) => transporter.send(JSON.stringify(message)));
     this.serverAndClient = new JSONRPCServerAndClient(jsonRpcServer, jsonRpcClient);
 
-    this.serverAndClient.applyServerMiddleware(this.handleRequestCancellation);
+    this.serverAndClient.applyServerMiddleware(this.handleRequestCancellation.bind(this));
     this.setupServerMethods();
     this.setupTransporterCallbacks();
   }
 
-  private readonly handleRequestCancellation: JSONRPCServerMiddleware<void> = async (next, request, serverParams) => {
+  private async handleRequestCancellation(next: JSONRPCServerMiddlewareNext<void>, request: JSONRPCRequest, serverParams: void) {
     if (request.id) {
       this.cancellableRequests.set(request.id, new AbortController());
     }
@@ -58,7 +58,7 @@ export class MutationServerProtocolHandler {
     }
 
     return response;
-  };
+  }
 
   private setupServerMethods(): void {
     this.serverAndClient.addMethodAdvanced('mutate', this.runMutationTestServerMethod.bind(this));
