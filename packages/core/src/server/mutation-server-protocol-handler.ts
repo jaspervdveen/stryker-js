@@ -21,8 +21,8 @@ import {
   CancelNotification,
   ClientMethods,
   InstrumentParams,
-  MutateParams,
-  MutatePartialResult,
+  MutationTestParams,
+  MutationTestPartialResult,
   ProgressParams,
   ErrorCodes,
   ServerMethods,
@@ -88,7 +88,7 @@ export class MutationServerProtocolHandler {
   }
 
   private setupServerMethods(): void {
-    this.serverAndClient.addMethodAdvanced('mutate', this.runMutationTestServerMethod.bind(this));
+    this.serverAndClient.addMethodAdvanced('mutationTest', this.runMutationTestServerMethod.bind(this));
     this.serverAndClient.addMethod('instrument', this.runInstrumentation.bind(this));
     this.serverAndClient.addMethod('initialize', this.initialize.bind(this));
   }
@@ -131,7 +131,7 @@ export class MutationServerProtocolHandler {
   }
 
   private async runMutationTestServerMethod(jsonRPCRequest: JSONRPCRequest): Promise<JSONRPCResponse> {
-    const params = jsonRPCRequest.params as MutateParams;
+    const params = jsonRPCRequest.params as MutationTestParams;
 
     if (!jsonRPCRequest.id) {
       throw new Error('Request id is required.');
@@ -155,7 +155,7 @@ export class MutationServerProtocolHandler {
     try {
       if (partialResultToken) {
         await new MutationTestMethod().runMutationTestRealtime(options, signal, (result) => {
-          const progressParams: ProgressParams<MutatePartialResult> = { token: partialResultToken, value: { mutants: [result] } };
+          const progressParams: ProgressParams<MutationTestPartialResult> = { token: partialResultToken, value: { mutants: [result] } };
           this.serverAndClient.notify('progress', progressParams);
         });
       } else {

@@ -92,9 +92,9 @@ export interface InstrumentParams {
   globPatterns?: string[];
 }
 
-export interface MutateParams extends PartialResultParams {
+export interface MutationTestParams extends PartialResultParams {
   /**
-   * The glob patterns to mutate.
+   * The glob patterns to mutation test.
    */
   globPatterns?: string[];
 }
@@ -106,7 +106,7 @@ export interface CancelParams {
   id: number | string;
 }
 
-export interface MutatePartialResult {
+export interface MutationTestPartialResult {
   /**
    * The mutant results.
    */
@@ -155,7 +155,7 @@ export const ErrorCodes = {
 export type ServerMethods = {
   initialize(params: InitializeParams): Promise<InitializeResult>;
   instrument(params: InstrumentParams): Promise<MutantResult[]>;
-  mutate(params: MutateParams): Promise<MutantResult[]>;
+  mutationTest(params: MutationTestParams): Promise<MutantResult[]>;
 };
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions

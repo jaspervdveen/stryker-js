@@ -16,8 +16,8 @@ import {
   ErrorCodes,
   InitializeParams,
   InstrumentParams,
-  MutateParams,
-  MutatePartialResult,
+  MutationTestParams,
+  MutationTestPartialResult,
   MutationServerProtocolHandler,
   ProgressParams,
 } from '../../../src/server/index.js';
@@ -51,7 +51,7 @@ describe(MutationServerProtocolHandler.name, () => {
     sinon.replace(MutationTestMethod, 'runMutationTest', sinon.fake.resolves(mutationTestResult));
 
     // Create a JSON-RPC request
-    const mutateParams: MutateParams = {
+    const mutateParams: MutationTestParams = {
       globPatterns: ['foo'],
     };
     const jsonRpcRequest = createJSONRPCRequest(1, 'mutate', mutateParams);
@@ -106,7 +106,7 @@ describe(MutationServerProtocolHandler.name, () => {
     const requestId = 2;
 
     // Create a JSON-RPC request
-    const mutateParams: MutateParams = {
+    const mutateParams: MutationTestParams = {
       globPatterns: ['foo', 'bar', 'baz'],
       partialResultToken,
     };
@@ -121,7 +121,7 @@ describe(MutationServerProtocolHandler.name, () => {
     // Wait for event loop to finish before asserting
     await clock.tickAsync(1);
 
-    const progressNotificationParams: ProgressParams<MutatePartialResult> = {
+    const progressNotificationParams: ProgressParams<MutationTestPartialResult> = {
       token: partialResultToken,
       value: { mutants: [mutationTestResult] },
     };
@@ -226,7 +226,7 @@ describe(MutationServerProtocolHandler.name, () => {
     transporterMock.emit('message', JSON.stringify(createJSONRPCRequest(1, 'initialize', { ...initializeParams, configUri: 'foo' })));
 
     // Create a JSON-RPC request
-    const mutateParams: MutateParams = {
+    const mutateParams: MutationTestParams = {
       globPatterns: ['bar'],
     };
 
