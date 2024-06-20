@@ -51,10 +51,10 @@ describe(MutationServerProtocolHandler.name, () => {
     sinon.replace(MutationTestMethod, 'runMutationTest', sinon.fake.resolves(mutationTestResult));
 
     // Create a JSON-RPC request
-    const mutateParams: MutationTestParams = {
+    const mutationTestParams: MutationTestParams = {
       globPatterns: ['foo'],
     };
-    const jsonRpcRequest = createJSONRPCRequest(1, 'mutate', mutateParams);
+    const jsonRpcRequest = createJSONRPCRequest(1, 'mutationTest', mutationTestParams);
     const runMutationRequest = JSON.stringify(jsonRpcRequest);
 
     transporterMock.emit('message', JSON.stringify(createJSONRPCRequest(1, 'initialize', initializeParams)));
@@ -106,11 +106,11 @@ describe(MutationServerProtocolHandler.name, () => {
     const requestId = 2;
 
     // Create a JSON-RPC request
-    const mutateParams: MutationTestParams = {
+    const mutationTestParams: MutationTestParams = {
       globPatterns: ['foo', 'bar', 'baz'],
       partialResultToken,
     };
-    const jsonRpcRequest = createJSONRPCRequest(requestId, 'mutate', mutateParams);
+    const jsonRpcRequest = createJSONRPCRequest(requestId, 'mutationTest', mutationTestParams);
     const runMutationRequest = JSON.stringify(jsonRpcRequest);
 
     transporterMock.emit('message', JSON.stringify(createJSONRPCRequest(1, 'initialize', initializeParams)));
@@ -226,11 +226,11 @@ describe(MutationServerProtocolHandler.name, () => {
     transporterMock.emit('message', JSON.stringify(createJSONRPCRequest(1, 'initialize', { ...initializeParams, configUri: 'foo' })));
 
     // Create a JSON-RPC request
-    const mutateParams: MutationTestParams = {
+    const mutationTestParams: MutationTestParams = {
       globPatterns: ['bar'],
     };
 
-    const jsonRpcRequest = createJSONRPCRequest(1, 'mutate', mutateParams);
+    const jsonRpcRequest = createJSONRPCRequest(1, 'mutationTest', mutationTestParams);
     const runMutationRequest = JSON.stringify(jsonRpcRequest);
 
     const fake = sinon.fake.resolves([]);
