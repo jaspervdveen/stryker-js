@@ -2,12 +2,67 @@ import { MutantResult } from '@stryker-mutator/api/core';
 
 export interface InitializeParams {
   /**
+   * Information about the client.
+   */
+  clientInfo: {
+    /**
+     * The client's version as defined by the client.
+     */
+    version: string;
+  };
+  /**
    * The URI of the mutation testing framework config file
    */
   configUri?: string;
 }
 
-export const InitializeResult = {};
+export interface PartialResultOptions {
+  /**
+   * The server supports returning partial results.
+   */
+  partialResults?: boolean;
+}
+
+/**
+ * The options for instrumentation provider.
+ */
+type InstrumentationOptions = PartialResultOptions;
+
+/**
+ * The options for mutation testing provider.
+ */
+type MutationTestOptions = PartialResultOptions;
+
+/**
+ * The capabilities provided by the server.
+ */
+export interface ServerCapabilities {
+  /**
+   * The server provides support for instrument runs.
+   */
+  instrumentationProvider?: InstrumentationOptions;
+  /**
+   * The server provides support for mutation test runs.
+   */
+  mutationTestProvider?: MutationTestOptions;
+}
+
+export interface InitializeResult {
+  /**
+   * The capabilities the mutation server provides.
+   */
+  capabilities?: ServerCapabilities;
+
+  /**
+   * The server's information.
+   */
+  serverInfo: {
+    /**
+     * The server's version as defined by the server.
+     */
+    version: string;
+  };
+}
 
 export type ProgressToken = number | string;
 
@@ -98,7 +153,7 @@ export const ErrorCodes = {
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type ServerMethods = {
-  initialize(params: InitializeParams): Promise<typeof InitializeResult>;
+  initialize(params: InitializeParams): Promise<InitializeResult>;
   instrument(params: InstrumentParams): Promise<MutantResult[]>;
   mutate(params: MutateParams): Promise<MutantResult[]>;
 };
